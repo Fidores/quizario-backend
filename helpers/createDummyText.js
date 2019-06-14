@@ -1,0 +1,1 @@
+module.exports = (length = 1) => new Array(length + 1).join('a');

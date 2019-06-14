@@ -1,0 +1,28 @@
+{
+  "name": "quizario",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll --verbose --runInBand"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.5",
+    "config": "^1.29.4",
+    "express": "^4.16.4",
+    "express-async-errors": "^3.1.1",
+    "formidable": "^1.2.1",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.5.0",
+    "rmfr": "^2.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "jest": "^24.7.1",
+    "supertest": "^4.0.2"
+  }
+}
