@@ -25,6 +25,10 @@ const QuizSchema = new mongoose.Schema({
                 required: true,
                 enum: [ 'a', 'b', 'c', 'd' ]
             },
+            duration: {
+                type: Number,
+                default: 0
+            },
             img: {
                 type: String
             }
@@ -59,6 +63,7 @@ function validateQuiz(quiz){
     const schema = {
         title: Joi.string().required().min(5).max(50),
         questions: Joi.array().max(128).items({
+            duration: Joi.number(),
             title: Joi.string().required().min(5).max(50),
             answers: Joi.object().keys({
                 a: Joi.string().max(50).required(),
