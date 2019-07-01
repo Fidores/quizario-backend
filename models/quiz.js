@@ -6,7 +6,7 @@ const QuizSchema = new mongoose.Schema({
         type: String,
         required: true,
         minlength: 5,
-        maxlength: 50
+        maxlength: 100
     },
     questions: {
         type: [ new mongoose.Schema({
@@ -14,7 +14,7 @@ const QuizSchema = new mongoose.Schema({
                 type: String,
                 required: true,
                 minlength: 5,
-                maxlength: 50
+                maxlength: 100
             },
             answers: {
                 type: Object,
@@ -61,10 +61,10 @@ const Quiz = mongoose.model('Quiz', QuizSchema);
 
 function validateQuiz(quiz){
     const schema = {
-        title: Joi.string().required().min(5).max(50),
+        title: Joi.string().required().min(5).max(100),
         questions: Joi.array().max(128).items({
-            duration: Joi.number(),
-            title: Joi.string().required().min(5).max(50),
+            duration: Joi.optional(),
+            title: Joi.string().required().min(5).max(100),
             answers: Joi.object().keys({
                 a: Joi.string().max(50).required(),
                 b: Joi.string().max(50).required(),
@@ -72,7 +72,8 @@ function validateQuiz(quiz){
                 d: Joi.string().max(50).required()
             }),
             rightAnswer: Joi.string().valid('a', 'b', 'c', 'd')
-        })
+        }),
+        creationTime: Joi.optional()
     }
 
     return Joi.validate(quiz, schema);

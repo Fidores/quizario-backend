@@ -36,6 +36,24 @@ const UserSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    gamesHistory: {
+        type: [new mongoose.Schema({
+            _id: false,
+            quizId: {
+                type: mongoose.Types.ObjectId,
+                ref: 'Quizzes',
+                required: true
+            },
+            title: {
+                type: String,
+                required: true
+            },
+            dateOfGame: {
+                type: Date,
+                default: Date.now
+            }
+         })],
     }
 });
 
