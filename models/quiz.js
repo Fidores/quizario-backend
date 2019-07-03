@@ -63,7 +63,7 @@ function validateQuiz(quiz){
     const schema = {
         title: Joi.string().required().min(5).max(100),
         questions: Joi.array().max(128).items({
-            duration: Joi.optional(),
+            duration: Joi.number().optional(),
             title: Joi.string().required().min(5).max(100),
             answers: Joi.object().keys({
                 a: Joi.string().max(50).required(),
@@ -72,8 +72,7 @@ function validateQuiz(quiz){
                 d: Joi.string().max(50).required()
             }),
             rightAnswer: Joi.string().valid('a', 'b', 'c', 'd')
-        }),
-        creationTime: Joi.optional()
+        })
     }
 
     return Joi.validate(quiz, schema);

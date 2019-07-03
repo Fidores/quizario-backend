@@ -25,13 +25,14 @@ router.get('/:id', validateObjId, async (req, res) => {
     if(!quiz) return res.status(404).send('There is not a quiz with given ID.');
 
     // If the user is logged in, add the game to the history
-    const userId = jwt.verify(req.header('x-auth-token'), config.get('jwtPrivateKey'))._id;
-    if(userId) {
+    const token = req.header('x-auth-token');
+    if(token){
+        const userId = jwt.verify(token, config.get('jwtPrivateKey'))._id;
         const user = await User.findById(userId);
         user.gamesHistory.push({ quizId: quiz._id, title: quiz.title });
         await user.save();
     }
-
+    
     // Increase games number
     quiz.games++;
     await quiz.save();
