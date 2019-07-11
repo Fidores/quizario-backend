@@ -13,11 +13,11 @@ router.get('/', async (req, res) => {
     const sections = [
         {
             title: 'Najnowsze',
-            quizzes: [ ...newests ]
+            quizzes: newests
         },
         {
             title: 'Najpopularniejsze',
-            quizzes: [ ...popular ]
+            quizzes: popular
         }
     ]
 

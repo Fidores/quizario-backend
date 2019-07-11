@@ -5,7 +5,7 @@ const auth = require('../middleware/auth');
 const { User, validate } = require('../models/user');
 
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user._id).select('-password -gamesHistory -isAdmin -__v');
     res.send(user);
 });
 
