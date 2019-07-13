@@ -5,7 +5,8 @@ const auth = require('../middleware/auth');
 const { User, validate } = require('../models/user');
 
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password -gamesHistory -isAdmin -__v');
+    const historySelection = req.query.includeHistory ? '+gamesHistory' : '-gamesHistory';
+    const user = await User.findById(req.user._id).select('-password -__v ' + historySelection);
     res.send(user);
 });
 
@@ -26,7 +27,7 @@ router.post('/', async (req, res) => {
         email: req.body.email
     });
 
-    // Hash new user's password for security reasons
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
     await user.save();

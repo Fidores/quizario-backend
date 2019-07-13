@@ -15,7 +15,8 @@ const mkdir = require('../helpers/mkdirIfExists');
 
 router.get('/', async (req, res) => {
     // Find all quizes and send them to the client
-    const quizzes = await Quiz.find();
+    console.log(req.query)
+    const quizzes = await Quiz.find(req.query);
     res.send(quizzes);
 });
 
