@@ -1,7 +1,6 @@
 const router = require('express').Router();
 
 const { Quiz } = require('../models/quiz');
-const rootPath = require('../helpers/getRootPath')();
 
 router.get('/', async (req, res) => {
     // res.setHeader('Content-type', 'text/html');

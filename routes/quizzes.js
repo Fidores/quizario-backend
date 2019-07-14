@@ -15,7 +15,6 @@ const mkdir = require('../helpers/mkdirIfExists');
 
 router.get('/', async (req, res) => {
     // Find all quizes and send them to the client
-    console.log(req.query)
     const quizzes = await Quiz.find(req.query);
     res.send(quizzes);
 });
@@ -30,7 +29,7 @@ router.get('/:id', validateObjId, async (req, res) => {
     if(token){
         const userId = jwt.verify(token, config.get('jwtPrivateKey'))._id;
         const user = await User.findById(userId);
-        user.gamesHistory.push({ quizId: quiz._id, title: quiz.title });
+        user.gamesHistory.pop({ quizId: quiz._id, title: quiz.title });
         await user.save();
     }
     

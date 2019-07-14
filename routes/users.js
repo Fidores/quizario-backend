@@ -5,9 +5,17 @@ const auth = require('../middleware/auth');
 const { User, validate } = require('../models/user');
 
 router.get('/me', auth, async (req, res) => {
-    const historySelection = req.query.includeHistory ? '+gamesHistory' : '-gamesHistory';
-    const user = await User.findById(req.user._id).select('-password -__v ' + historySelection);
+    const user = await User.findById(req.user._id).select('-password -__v -gamesHistory');
     res.send(user);
+});
+
+router.get('/me/history', auth, async (req, res) => {
+    const history = await User.findById(req.user._id, { gamesHistory: { $slice: -30 } });
+    res.send(history.gamesHistory);
+});
+
+router.post('me/history', auth, async (req, res) => {
+    res.send('Test');
 });
 
 router.post('/', async (req, res) => {
