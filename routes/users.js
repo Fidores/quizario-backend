@@ -9,15 +9,6 @@ router.get('/me', auth, async (req, res) => {
     res.send(user);
 });
 
-router.get('/me/history', auth, async (req, res) => {
-    const history = await User.findById(req.user._id, { gamesHistory: { $slice: -30 } });
-    res.send(history.gamesHistory);
-});
-
-router.post('me/history', auth, async (req, res) => {
-    res.send('Test');
-});
-
 router.post('/', async (req, res) => {
     // Check if user data is valid
     const { error } = validate(req.body);

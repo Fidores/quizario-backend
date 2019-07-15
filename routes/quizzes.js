@@ -1,11 +1,8 @@
 const router = require('express').Router();
 const rmfr = require('rmfr');
 const formidable = require('formidable');
-const jwt = require('jsonwebtoken');
-const config = require('config');
 
 const { Quiz, validate } = require('../models/quiz');
-const { User } = require('../models/user');
 const auth = require('../middleware/auth');
 const author = require('../middleware/author');
 const validateObjId = require('../middleware/validateObjId');
@@ -23,15 +20,6 @@ router.get('/:id', validateObjId, async (req, res) => {
     // Check if quiz exists in database
     const quiz = await Quiz.findById(req.params.id);
     if(!quiz) return res.status(404).send('There is not a quiz with given ID.');
-
-    // If the user is logged in, add the game to the history
-    const token = req.header('x-auth-token');
-    if(token){
-        const userId = jwt.verify(token, config.get('jwtPrivateKey'))._id;
-        const user = await User.findById(userId);
-        user.gamesHistory.pop({ quizId: quiz._id, title: quiz.title });
-        await user.save();
-    }
     
     // Increase games number
     quiz.games++;
