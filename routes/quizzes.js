@@ -12,14 +12,8 @@ const mkdir = require('../helpers/mkdirIfExists');
 
 router.get('/', async (req, res) => {
     // Find all quizes and send them to the client 
-    const quizzes = await Quiz.find(req.query);
-    res.send(quizzes);
-});
-
-router.get('/search', async (req, res) => {
-    const query = {};
-    query[req.query.field] = { $regex: new RegExp(req.query.pattern), $options: 'i' }
-    const quizzes = await Quiz.find(query);
+    const query = JSON.parse(req.query.query);
+    const quizzes = await Quiz.find(query).sort('-creationTime');
     res.send(quizzes);
 });
 

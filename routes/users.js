@@ -5,7 +5,9 @@ const auth = require('../middleware/auth');
 const { User, validate } = require('../models/user');
 
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password -__v -gamesHistory');
+    const user = await User.findById(req.user._id).select('-password -__v');
+    const history = user.gamesHistory.toObject().sort((a, b) => new Date(b.dateOfGame).getTime() - new Date(a.dateOfGame).getTime() ).slice(0, 50);
+    user.gamesHistory = history;
     res.send(user);
 });
 
