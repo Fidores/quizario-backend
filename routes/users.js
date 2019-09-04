@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 
 const auth = require('../middleware/auth');
-const { User, validate } = require('../models/user');
+const { User, validate, validateUpdate } = require('../models/user');
 
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select('-password -__v');
@@ -41,6 +41,22 @@ router.post('/', async (req, res) => {
         surname: user.surname,
         email: user.email
     });
+});
+
+router.put('/', auth, async (req, res) => {
+    const { error } = validateUpdate(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    const user = await User.findById(req.user._id);
+    
+    if(req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+    } else delete req.body.password;
+    
+    user.set(req.body);
+    await user.save();
+    res.send(user);
 });
 
 module.exports = router;

@@ -74,5 +74,17 @@ function validateUser(user){
     return Joi.validate(user, scheme);
 }
 
+function validateUpdate(user) {
+    const scheme = {
+        name: Joi.string().min(3).max(128),
+        surname: Joi.string().min(3).max(128),
+        email: Joi.string().email().max(128),
+        password: Joi.string().min(5).max(255).allow('')
+    }
+
+    return Joi.validate(user, scheme);
+}
+
 module.exports.User = User;
 module.exports.validate = validateUser;
+module.exports.validateUpdate = validateUpdate;
