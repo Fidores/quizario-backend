@@ -42,7 +42,7 @@ const UserSchema = new mongoose.Schema({
             _id: false,
             quizId: {
                 type: mongoose.Types.ObjectId,
-                ref: 'Quizzes',
+                ref: 'Quiz',
                 required: true
             },
             title: {
@@ -53,17 +53,29 @@ const UserSchema = new mongoose.Schema({
                 type: Date,
                 default: Date.now
             }
-         })],
+        })],
+    },
+    bookmarks: {
+        type: [new mongoose.Schema({
+            _id: false,
+            quiz: {
+                type: mongoose.Types.ObjectId,
+                ref: 'Quiz'
+            }
+        })]
     }
 });
 
-UserSchema.methods.generateAuthToken = function() {
-    return jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
+UserSchema.methods.generateAuthToken = function () {
+    return jwt.sign({
+        _id: this._id,
+        isAdmin: this.isAdmin
+    }, config.get('jwtPrivateKey'));
 }
 
 const User = mongoose.model('User', UserSchema);
 
-function validateUser(user){
+function validateUser(user) {
     const scheme = {
         name: Joi.string().required().min(3).max(128),
         surname: Joi.string().required().min(3).max(128),

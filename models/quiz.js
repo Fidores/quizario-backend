@@ -45,7 +45,7 @@ const QuizSchema = new mongoose.Schema({
     author: {
         type: mongoose.Types.ObjectId,
         required: true,
-        ref: 'Users'
+        ref: 'User'
     },
     games: {
         type: Number,
