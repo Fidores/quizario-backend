@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 const auth = require('../middleware/auth');
 const { User, validate, validateUpdate } = require('../models/user');
@@ -57,6 +58,27 @@ router.put('/', auth, async (req, res) => {
     user.set(req.body);
     await user.save();
     res.send(user);
+});
+
+router.post('/bookmarks', auth, async (req, res) => {
+    if (!mongoose.Types.ObjectId.isValid(req.body.id)) return res.status(400).send('Invalid ID');
+
+    const user = await User.findById(req.user._id).select('bookmarks');
+    const isAlreadyBookmarked = user.bookmarks.toObject().some(bookmark => bookmark.quiz.toString() === req.body.id);
+
+    if (!isAlreadyBookmarked)
+        user.bookmarks.push({ quiz: req.body.id });
+    else
+        user.bookmarks.pull({ quiz: req.body.id });
+    
+    await user.save();
+
+    res.send('Saved');
+});
+
+router.get('/bookmarks', auth, async (req, res) => {
+    const bookmarks = await User.findById(req.user._id).select('bookmarks').populate('bookmarks.quiz');
+    res.send(bookmarks);
 });
 
 module.exports = router;

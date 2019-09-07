@@ -146,23 +146,4 @@ router.post('/uploads/:id', [validateObjId, auth, author], async (req, res) => {
     });
 });
 
-router.post('/bookmarks', auth, async (req, res) => {
-    if(!mongoose.Types.ObjectId.isValid(req.body.id)) return res.status(400).send('Nieprawidłowe ID.');
-
-    const user = await User.findById(req.user._id).select('bookmarks');
-    const isAlreadyBookmarked = user.bookmarks.toObject().some(bookmark => bookmark.quiz.toString() === req.body.id);
-
-    if(isAlreadyBookmarked) return res.send('Quiz został już zapisany.');
-
-    user.bookmarks.push({ quiz: req.body.id });
-
-    await user.save();
-
-    res.send('Zapisano.');
-});
-
-router.get('/bookmarks', async (req, res) => {
-    res.send('DONE')
-});
-
 module.exports = router;
