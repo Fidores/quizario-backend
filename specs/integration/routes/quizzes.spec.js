@@ -87,7 +87,7 @@ describe('/api/quizzes', () => {
                 }
             ])
 
-            const res = await request(server).get(url);
+            const res = await request(server).get(url).query({ query: JSON.stringify({}) });
 
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
@@ -103,6 +103,8 @@ describe('/api/quizzes', () => {
             await newQuiz.save();
             
             const res = await request(server).get(url + '/' + newQuiz._id);
+
+            newQuiz.games++;
 
             expect(res.status).toBe(200);
             expect(res.body).toMatchObject(JSON.parse(JSON.stringify(newQuiz)));
@@ -131,8 +133,8 @@ describe('/api/quizzes', () => {
             expect(res.status).toBe(400);
         });
 
-        it('should return 400 status if the title is more than 50 characters', async () => {
-            quiz.title = dummyText(51);
+        it('should return 400 status if the title is more than 100 characters', async () => {
+            quiz.title = dummyText(101);
             const res = await request(server).post(url)
             .set('x-auth-token', token)
             .send(quiz);
@@ -158,8 +160,8 @@ describe('/api/quizzes', () => {
             expect(res.status).toBe(400);
         });
 
-        it('should return 400 status if a question is more than 50 characters', async () => {
-            quiz.questions[0].title = dummyText(51);
+        it('should return 400 status if a question is more than 100 characters', async () => {
+            quiz.questions[0].title = dummyText(101);
             const res = await request(server).post(url)
             .set('x-auth-token', token)
             .send(quiz);
@@ -209,94 +211,6 @@ describe('/api/quizzes', () => {
             .send(quiz);
             
             expect(res.status).toBe(200);
-        });
-    });
-
-    describe('POST /uploads/:id', () => {
-        it('should upload images to a quiz', async () => {
-            const user = await new User({
-                name: 'John',
-                surname: 'Smith',
-                email: 'john.smith@gmail.com',
-                password: '123456789'
-            }).save();
-            quiz.author = user._id;
-            const newQuiz = await new Quiz(quiz).save();
-            const questionId = newQuiz.questions[0]._id.toLocaleString();
-
-            const uploadPath = `${ rootPath }\\uploads\\quizzes\\${ newQuiz._id }\\${ questionId }.jpg`;
-
-            const res = await request(server)
-            .post(`${url}/uploads/${newQuiz._id}`)
-            .set('x-auth-token', user.generateAuthToken())
-            .attach(questionId, `${ rootPath }\\assets\\test.jpg`);
-
-            expect(res.body.questions[0].img).toMatch(uploadPath);
-        });
-
-        it('should return 207 status if file with unsupported extension is sent', async () => {
-            const user = await new User({
-                name: 'John',
-                surname: 'Smith',
-                email: 'john.smith@gmail.com',
-                password: '123456789'
-            }).save();
-            quiz.author = user._id;
-            const newQuiz = await new Quiz(quiz).save();
-            const questionId = newQuiz.questions[0]._id.toLocaleString();
-
-            const res = await request(server)
-            .post(`${url}/uploads/${newQuiz._id}`)
-            .set('x-auth-token', user.generateAuthToken())
-            .attach(questionId, `${ rootPath }\\assets\\test2.gif`);
-
-            expect(res.status).toBe(207);
-        });
-
-        it('should return 404 status if invalid question id is passed', async () => {
-            const user = await new User({
-                name: 'John',
-                surname: 'Smith',
-                email: 'john.smith@gmail.com',
-                password: '123456789'
-            }).save();
-            quiz.author = user._id;
-            const newQuiz = await new Quiz(quiz).save();
-
-            const res = await request(server)
-            .post(`${url}/uploads/${newQuiz._id}`)
-            .set('x-auth-token', user.generateAuthToken())
-            .attach('1', `${ rootPath }\\assets\\test.jpg`);
-
-            expect(res.status).toBe(404);
-        });
-
-        it('should return 404 status if invalid id is passed', async () => {
-            const res = await request(server).post(`${ url }/uploads/1`);
-
-            expect(res.status).toBe(404);
-        });
-
-        it('should return 401 status if user isn\'t logged in', async () => {
-            const res = await request(server).post(`${ url }/uploads/${ new mongoose.Types.ObjectId().toHexString() }`);
-
-            expect(res.status).toBe(401);
-        });
-
-        it('should return 403 status if user isn\'t the author of the quiz', async () => {
-            quiz.author = new mongoose.Types.ObjectId().toHexString();
-            const newQuiz = await new Quiz(quiz).save();
-            const res = await request(server).post(`${ url }/uploads/${ newQuiz._id }`).set('x-auth-token', token);
-
-            expect(res.status).toBe(403);
-        });
-
-        it('should return 404 status if quiz isn\t found', async () => {
-            const res = await request(server)
-            .post(`${ url }/uploads/${ new mongoose.Types.ObjectId().toHexString() }`)
-            .set('x-auth-token', token);
-
-            expect(res.status).toBe(404);
         });
     });
 

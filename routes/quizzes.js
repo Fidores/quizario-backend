@@ -3,7 +3,6 @@ const rmfr = require('rmfr');
 const formidable = require('formidable');
 const jwt = require('jsonwebtoken');
 const config = require('config');
-const mongoose = require('mongoose');
 
 const { Quiz, validate } = require('../models/quiz');
 const { User } = require('../models/user');
@@ -101,7 +100,6 @@ router.post('/uploads/:id', [validateObjId, auth, author], async (req, res) => {
     ];
     let error = false;
     const uploadDir = await mkdir(`${rootPath}\\uploads\\quizzes\\${quiz._id}`);
-    
     const form = new formidable.IncomingForm({
         keepExtensions: true,
         uploadDir,

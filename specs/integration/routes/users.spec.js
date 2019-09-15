@@ -116,6 +116,7 @@ describe('/api/users', () => {
 
             user = JSON.parse(JSON.stringify(user));
             delete user.password;
+            delete user.__v;
 
             expect(res.body).toMatchObject(user);
         });

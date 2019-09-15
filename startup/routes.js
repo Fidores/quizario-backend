@@ -11,7 +11,7 @@ const rootPath = require('../helpers/getRootPath')();
 module.exports = function(app) {
     app.use(cors);
     app.use(express.json());
-    app.use('/uploads', express.static(`${ rootPath }\\uploads\\`));
+    app.use('/uploads', express.static(`${ rootPath }\\public\\`));
     app.use('/api/users', users);
     app.use('/api/quizzes', quizzes);
     app.use('/api/auth', auth);

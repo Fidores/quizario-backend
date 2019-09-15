@@ -31,7 +31,7 @@ describe('/api/auth', () => {
     describe('POST /', () => {
         it('should return auth token', async () => {
             const res = await request(server).post(url).send(payload);
-            const decoded = jwt.verify(res.text, config.get('jwtPrivateKey'));
+            const decoded = jwt.verify(res.header['x-auth-token'], config.get('jwtPrivateKey'));
         
             expect(res.status).toBe(200);
             expect(decoded._id).toMatch(user.body._id);
