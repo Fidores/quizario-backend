@@ -1,4 +1,6 @@
 {
     "jwtPrivateKey": "",
-    "database": "mongodb://localhost/quizario"
+    "database": "mongodb://localhost/quizario",
+    "supportedImageExtensions": [ "image/png", "image/jpeg" ],
+    "maxImageSize": 2048
 }

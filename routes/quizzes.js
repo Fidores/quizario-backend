@@ -12,6 +12,7 @@ const validateObjId = require('../middleware/validateObjId');
 const rootPath = require('../helpers/getRootPath')();
 const extension = require('../helpers/getFileExtension');
 const mkdir = require('../helpers/mkdirIfExists');
+const File = require('../helpers/readFileFromBase64');
 
 router.get('/', async (req, res) => {
     // Find all quizes and send them to the client 
@@ -45,6 +46,18 @@ router.post('/', auth, async (req, res) => {
     // Check if quiz data is valid
     const { error } = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
+
+    req.body.questions.forEach((question, index) => {
+        const file = new File(question.img);
+        const isSupported = config.get('supportedImageExtensions').includes(file.mimeType);
+
+        // Validate image
+        if(!isSupported) return res.status(400).send('Not supported file type.');
+        if(file.size > config.get('maxImageSize')) return res.status(400).send('Image is too large.');
+
+        // Conver base64 type to Buffer type.
+        // if(question.img) req.body.questions[index].img = Buffer.from(question.img, 'base64');
+    });
 
     // Create new quiz in database
     let quiz = new Quiz({

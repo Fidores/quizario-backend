@@ -6,12 +6,12 @@ const quizzes = require('../routes/quizzes');
 const auth = require('../routes/auth');
 const error = require('../middleware/error');
 const cors = require('../routes/cors');
-const rootPath = require('../helpers/getRootPath')();
+const bodyParser = require('body-parser');
 
 module.exports = function(app) {
     app.use(cors);
+    app.use(bodyParser.json({ limit: '2mb' }));
     app.use(express.json());
-    app.use('/uploads', express.static(`${ rootPath }\\public\\`));
     app.use('/api/users', users);
     app.use('/api/quizzes', quizzes);
     app.use('/api/auth', auth);

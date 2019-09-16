@@ -40,7 +40,8 @@ const QuizSchema = new mongoose.Schema({
         default: Date.now
     },
     img: {
-        type: String
+        type: Buffer,
+        contentType: String
     },
     author: {
         type: mongoose.Types.ObjectId,
@@ -71,8 +72,10 @@ function validateQuiz(quiz){
                 c: Joi.string().max(50).required(),
                 d: Joi.string().max(50).required()
             }),
-            rightAnswer: Joi.string().valid('a', 'b', 'c', 'd')
-        })
+            rightAnswer: Joi.string().valid('a', 'b', 'c', 'd'),
+            img: Joi.string().allow('')
+        }),
+        img: Joi.string().allow('')
     }
 
     return Joi.validate(quiz, schema);
