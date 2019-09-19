@@ -1,8 +1,9 @@
 const router = require('express').Router();
 
 const { Quiz } = require('../models/quiz');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 
-router.get('/', async (req, res) => {
+router.get('/', asyncMiddleware(async (req, res) => {
     // res.setHeader('Content-type', 'text/html');
     // res.sendFile(`${ rootPath }\\view\\index.html`);
 
@@ -21,6 +22,6 @@ router.get('/', async (req, res) => {
     ]
 
     res.send(sections);
-});
+}));
 
 module.exports = router;

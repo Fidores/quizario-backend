@@ -2,9 +2,10 @@ const router = require('express').Router();
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
 
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 const { User } = require('../models/user');
 
-router.post('/', async (req, res) => {
+router.post('/', asyncMiddleware(async (req, res) => {
     // Validate user's email and password
     const { error } = validate(req.body);
     if(error) return res.status(401).send(error.details[0].message);
@@ -20,7 +21,7 @@ router.post('/', async (req, res) => {
     // Generate and send token to the user
     const token = user.generateAuthToken();
     res.header('x-auth-token', token).send(user);
-});
+}));
 
 function validate(body){
     const schema = {

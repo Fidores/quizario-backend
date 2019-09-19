@@ -4,15 +4,17 @@ const mongoose = require('mongoose');
 
 const auth = require('../middleware/auth');
 const { User, validate, validateUpdate } = require('../models/user');
+const asyncMiddleware = require('../middleware/asyncMiddleware');
 
-router.get('/me', auth, async (req, res) => {
+
+router.get('/me', auth, asyncMiddleware(async (req, res) => {
     const user = await User.findById(req.user._id).select('-password -__v');
     const history = user.gamesHistory.toObject().sort((a, b) => new Date(b.dateOfGame).getTime() - new Date(a.dateOfGame).getTime() ).slice(0, 50);
     user.gamesHistory = history;
     res.send(user);
-});
+}));
 
-router.post('/', async (req, res) => {
+router.post('/', asyncMiddleware(async (req, res) => {
     // Check if user data is valid
     const { error } = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
@@ -42,9 +44,9 @@ router.post('/', async (req, res) => {
         surname: user.surname,
         email: user.email
     });
-});
+}));
 
-router.put('/', auth, async (req, res) => {
+router.put('/', auth, asyncMiddleware(async (req, res) => {
     const { error } = validateUpdate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
@@ -58,9 +60,9 @@ router.put('/', auth, async (req, res) => {
     user.set(req.body);
     await user.save();
     res.send(user);
-});
+}));
 
-router.post('/bookmarks', auth, async (req, res) => {
+router.post('/bookmarks', auth, asyncMiddleware(async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.body.id)) return res.status(400).send('Invalid ID');
 
     const user = await User.findById(req.user._id).select('bookmarks');
@@ -74,11 +76,11 @@ router.post('/bookmarks', auth, async (req, res) => {
     await user.save();
 
     res.send('Saved');
-});
+}));
 
-router.get('/bookmarks', auth, async (req, res) => {
+router.get('/bookmarks', auth, asyncMiddleware(async (req, res) => {
     const bookmarks = await User.findById(req.user._id).select('bookmarks').populate('bookmarks.quiz');
     res.send(bookmarks);
-});
+}));
 
 module.exports = router;

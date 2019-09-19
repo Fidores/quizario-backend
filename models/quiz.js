@@ -20,7 +20,7 @@ const QuizSchema = new mongoose.Schema({
                 type: Object,
                 required: true
             },
-            rightAnswer: {
+            correctAnswer: {
                 type: String,
                 required: true,
                 enum: [ 'a', 'b', 'c', 'd' ]
@@ -40,8 +40,7 @@ const QuizSchema = new mongoose.Schema({
         default: Date.now
     },
     img: {
-        type: Buffer,
-        contentType: String
+        type: String
     },
     author: {
         type: mongoose.Types.ObjectId,
@@ -72,7 +71,7 @@ function validateQuiz(quiz){
                 c: Joi.string().max(50).required(),
                 d: Joi.string().max(50).required()
             }),
-            rightAnswer: Joi.string().valid('a', 'b', 'c', 'd'),
+            correctAnswer: Joi.string().valid('a', 'b', 'c', 'd'),
             img: Joi.string().allow('')
         }),
         img: Joi.string().allow('')
