@@ -27,7 +27,7 @@ describe('/api/quizzes', () => {
                         c: '55',
                         d: '5'
                     },
-                    rightAnswer: 'c'
+                    correctAnswer: 'c'
                 },
                 {
                     title: 'Czego można użyć zamiast \'XMLHTTPRequest()\' ?',
@@ -37,7 +37,7 @@ describe('/api/quizzes', () => {
                         c: 'Server Side Events',
                         d: 'Nie można inaczej wysyłać zapytań do serwera'
                     },
-                    rightAnswer: 'c'
+                    correctAnswer: 'c'
                 }
             ]
         }

@@ -3,6 +3,9 @@ const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
+const { Game } = require('./game');
+const { Bookmark } = require('./bookmark');
+
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -38,31 +41,10 @@ const UserSchema = new mongoose.Schema({
         default: false
     },
     gamesHistory: {
-        type: [new mongoose.Schema({
-            _id: false,
-            quizId: {
-                type: mongoose.Types.ObjectId,
-                ref: 'Quiz',
-                required: true
-            },
-            title: {
-                type: String,
-                required: true
-            },
-            date: {
-                type: Date,
-                default: Date.now
-            }
-        })],
+        type: [ Game ],
     },
     bookmarks: {
-        type: [new mongoose.Schema({
-            _id: false,
-            quiz: {
-                type: mongoose.Types.ObjectId,
-                ref: 'Quiz'
-            }
-        })]
+        type: [ Bookmark ]
     }
 });
 
@@ -76,6 +58,7 @@ UserSchema.methods.generateAuthToken = function () {
 const User = mongoose.model('User', UserSchema);
 
 function validateUser(user) {
+
     const scheme = {
         name: Joi.string().required().min(3).max(128),
         surname: Joi.string().required().min(3).max(128),

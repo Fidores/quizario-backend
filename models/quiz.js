@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
+const { Img, ValidationSchema: ImageValidationSchema } = require('./img');
+const { Question, ValidationSchema: QuestionValidationSchema } = require('./question');
+
 const QuizSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -9,30 +12,7 @@ const QuizSchema = new mongoose.Schema({
         maxlength: 100
     },
     questions: {
-        type: [ new mongoose.Schema({
-            title: {
-                type: String,
-                required: true,
-                minlength: 5,
-                maxlength: 100
-            },
-            answers: {
-                type: Object,
-                required: true
-            },
-            correctAnswer: {
-                type: String,
-                required: true,
-                enum: [ 'a', 'b', 'c', 'd' ]
-            },
-            duration: {
-                type: Number,
-                default: 0
-            },
-            img: {
-                type: String
-            }
-        }) ],
+        type: [ Question ],
         required: true
     },
     creationTime: {
@@ -40,7 +20,7 @@ const QuizSchema = new mongoose.Schema({
         default: Date.now
     },
     img: {
-        type: String
+        type: Img
     },
     author: {
         type: mongoose.Types.ObjectId,
@@ -62,19 +42,8 @@ const Quiz = mongoose.model('Quiz', QuizSchema);
 function validateQuiz(quiz){
     const schema = {
         title: Joi.string().required().min(5).max(100),
-        questions: Joi.array().max(128).items({
-            duration: Joi.number().optional(),
-            title: Joi.string().required().min(5).max(100),
-            answers: Joi.object().keys({
-                a: Joi.string().max(50).required(),
-                b: Joi.string().max(50).required(),
-                c: Joi.string().max(50).required(),
-                d: Joi.string().max(50).required()
-            }),
-            correctAnswer: Joi.string().valid('a', 'b', 'c', 'd'),
-            img: Joi.string().allow('')
-        }),
-        img: Joi.string().allow('')
+        questions: Joi.array().max(128).items(QuestionValidationSchema),
+        img: ImageValidationSchema
     }
 
     return Joi.validate(quiz, schema);

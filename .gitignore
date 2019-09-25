@@ -3,3 +3,5 @@ node_modules/
 logs/
 coverage/
 uploads/
+serve.bat
+serve_tests.bat
