@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 
 const { Game } = require('./game');
-const { Bookmark } = require('./bookmark');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -42,9 +41,6 @@ const UserSchema = new mongoose.Schema({
     },
     gamesHistory: {
         type: [ Game ],
-    },
-    bookmarks: {
-        type: [ Bookmark ]
     }
 });
 

@@ -62,25 +62,4 @@ router.put('/', auth, asyncMiddleware(async (req, res) => {
     res.send(user);
 }));
 
-router.post('/bookmarks', auth, asyncMiddleware(async (req, res) => {
-    if (!mongoose.Types.ObjectId.isValid(req.body.id)) return res.status(400).send('Invalid ID');
-
-    const user = await User.findById(req.user._id).select('bookmarks');
-    const isAlreadyBookmarked = user.bookmarks.toObject().some(bookmark => bookmark.quiz.toString() === req.body.id);
-
-    if (!isAlreadyBookmarked)
-        user.bookmarks.push({ quiz: req.body.id });
-    else
-        user.bookmarks.pull({ quiz: req.body.id });
-    
-    await user.save();
-
-    res.send('Saved');
-}));
-
-router.get('/bookmarks', auth, asyncMiddleware(async (req, res) => {
-    const bookmarks = await User.findById(req.user._id).select('bookmarks').populate('bookmarks.quiz');
-    res.send(bookmarks);
-}));
-
 module.exports = router;
