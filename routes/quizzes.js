@@ -7,8 +7,19 @@ const { User } = require('../models/user');
 const auth = require('../middleware/auth');
 const author = require('../middleware/author');
 const validateObjId = require('../middleware/validateObjId');
-const Base64 = require('../helpers/readPayloadFromBase64');
 const asyncMiddleware = require('../middleware/asyncMiddleware');
+const Base64 = require('../helpers/readPayloadFromBase64');
+
+function validateImage(img) {
+    const file = new Base64(img);
+    const isSupported = config.get('supportedImageExtensions').includes(file.mimeType);
+    const isTooLarge = file.size > config.get('maxImageSize');
+
+    if(!isSupported) return res.status(400).send('Image too large');
+    if(isTooLarge) return res.status(400).send('Image too large');
+
+    return file;
+}
 
 router.get('/', asyncMiddleware(async (req, res) => {
     // Find all quizes and send them to the client 
@@ -45,26 +56,31 @@ router.post('/', auth, asyncMiddleware(async (req, res) => {
     // Check if quiz data is valid
     const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
+    
+    if(req.body.img) {
+        const frontImage = validateImage(req.body.img);
+
+        req.body.img = {
+            binaryData: Buffer.from(frontImage.base64Body, 'base64'),
+            header: frontImage.base64Header
+        }
+    } else delete req.body.img;
 
     req.body.questions.forEach((question, index) => {
-        if(!question.img) return;
-        const file = new Base64(question.img);
-        const isSupported = config.get('supportedImageExtensions').includes(file.mimeType);
-
-        // Validate image
-        if (!isSupported) return res.status(400).send('Not supported file type.');
-        if (file.size > config.get('maxImageSize')) return res.status(400).send('Image is too large.');
+        if(!question.img) return delete req.body.questions[index].img;
+        const file = validateImage(question.img);
 
         // Conver base64 type to Buffer type.
         if(question.img) req.body.questions[index].img = {
             binaryData: Buffer.from(file.base64Body, 'base64'),
             header: file.base64Header
-        };
+        }
     });
 
     // Create new quiz in database
     let quiz = new Quiz({
         title: req.body.title,
+        img: req.body.img,
         questions: req.body.questions,
         author: req.user._id
     });
@@ -84,14 +100,18 @@ router.put('/:id', [validateObjId, auth, author], asyncMiddleware(async (req, re
     let quiz = await Quiz.findById(req.params.id);
     if(!quiz) return res.status(404).send('There is not a quiz with given ID.');
 
-    req.body.questions.forEach((question, index) => {
-        if(!question.img) return;
-        const file = new Base64(question.img);
-        const isSupported = config.get('supportedImageExtensions').includes(file.mimeType);
+    if(req.body.img) {
+        const file = validateImage(req.body.img);
 
-        // Validate image
-        if (!isSupported) return res.status(400).send('Not supported file type.');
-        if (file.size > config.get('maxImageSize')) return res.status(400).send('Image is too large.');
+        req.body.img = {
+            binaryData: Buffer.from(file.base64Body, 'base64'),
+            header: file.base64Header
+        }
+    } else delete req.body.img;
+
+    req.body.questions.forEach((question, index) => {
+        if(!question.img) return delete req.body.questions[index].img;
+        const file = validateImage(question.img);
 
         // Conver base64 type to Buffer type.
         if(question.img) req.body.questions[index].img = {
@@ -104,6 +124,7 @@ router.put('/:id', [validateObjId, auth, author], asyncMiddleware(async (req, re
 
     await quiz.update({
         title: req.body.title,
+        img: req.body.img,
         questions: req.body.questions,
         author: req.user._id
     }, { new: true });

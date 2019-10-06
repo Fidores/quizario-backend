@@ -9,10 +9,5 @@ const ImgSchema = new mongoose.Schema({
 
 const ValidationSchema = Joi.string().allow('');
 
-function validate(img) {
-    return Joi.validate(img, ValidationSchema);
-}
-
 module.exports.Img = ImgSchema;
 module.exports.ValidationSchema = ValidationSchema;
-module.exports.validate = validate;
